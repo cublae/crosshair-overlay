@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/crosshair-core",
+    "crates/crosshair-daemon",
+    "crates/crosshair-gui",
+    "crates/crosshair-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/cublae/crosshair-overlay"
+homepage = "https://github.com/cublae/crosshair-overlay"
+description = "Click-through crosshair overlay for Wayland compositors"
+
+[workspace.dependencies]
+crosshair-core = { path = "crates/crosshair-core" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+anyhow = "1"
+gtk4 = "0.9"
+cairo-rs = "0.20"

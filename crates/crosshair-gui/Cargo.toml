@@ -1,0 +1,16 @@
+[package]
+name = "crosshair-gui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description.workspace = true
+
+[[bin]]
+name = "crosshair-gui"
+path = "src/main.rs"
+
+[dependencies]
+crosshair-core.workspace = true
+anyhow.workspace = true
+gtk4 = { workspace = true, features = ["v4_10"] }

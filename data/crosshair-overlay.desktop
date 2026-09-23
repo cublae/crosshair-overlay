@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.4
+Name=Crosshair
+GenericName=Crosshair Overlay
+Comment=Draw a click-through crosshair on top of your games
+Exec=crosshair gui
+TryExec=crosshair
+Icon=crosshair-overlay
+Terminal=false
+Categories=Utility;
+Keywords=crosshair;overlay;aim;reticle;game;
+StartupNotify=true
+StartupWMClass=org.crosshair_overlay.Settings

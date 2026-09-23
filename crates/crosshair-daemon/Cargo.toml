@@ -1,0 +1,21 @@
+[package]
+name = "crosshair-daemon"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description.workspace = true
+
+[[bin]]
+name = "crosshair-daemon"
+path = "src/main.rs"
+
+[dependencies]
+crosshair-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+gtk4.workspace = true
+gtk4-layer-shell = "0.4"
+async-channel = "2"
+notify = "6"
