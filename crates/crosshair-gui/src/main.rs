@@ -391,8 +391,19 @@ fn build_ui(app: &gtk4::Application) {
                 st.profile = st.config.profiles.get(&name).copied().unwrap_or_default();
                 st.name = name;
             }
-            refresh();
-            apply();
+            // Repopulate from an idle callback, not from here. We are inside
+            // GtkListView's activation of the row that was clicked, and
+            // `refresh` replaces this dropdown's model — which frees the list
+            // items GTK is still using on the way back out. That is a
+            // use-after-free, and it ends the process with SIGSEGV.
+            defer({
+                let refresh = Rc::clone(&refresh);
+                let apply = Rc::clone(&apply);
+                move || {
+                    refresh();
+                    apply();
+                }
+            });
         }
     });
 
@@ -417,9 +428,18 @@ fn build_ui(app: &gtk4::Application) {
                     st.profile = profile;
                 }
             }
-            dd.set_selected(0);
-            refresh();
-            apply();
+            // Same hazard as the profile dropdown: resetting the selection
+            // tears down the popup list GTK is still activating.
+            defer({
+                let dd = dd.clone();
+                let refresh = Rc::clone(&refresh);
+                let apply = Rc::clone(&apply);
+                move || {
+                    dd.set_selected(0);
+                    refresh();
+                    apply();
+                }
+            });
         }
     });
 
@@ -609,6 +629,16 @@ fn populate_monitors(dd: &gtk4::DropDown, state: &Shared) {
     let selected = names.iter().position(|n| *n == current).unwrap_or(0);
     dd.set_selected(selected as u32);
     state.borrow_mut().loading = false;
+}
+
+/// Runs `action` once the signal currently being emitted has unwound.
+///
+/// Rebuilding the form from inside a widget's own signal handler means
+/// mutating widgets that GTK is still walking over — and a dropdown whose
+/// model is replaced mid-activation frees list items the caller dereferences
+/// on the way out. An idle callback puts the work after that stack is gone.
+fn defer(action: impl FnOnce() + 'static) {
+    glib::idle_add_local_once(action);
 }
 
 fn to_gdk(color: Rgba) -> gdk::RGBA {
